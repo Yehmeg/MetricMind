@@ -1,0 +1,8 @@
+{
+  "metrics": ["revenue", "reported_profit", "reported_profit_margin"],
+  "dimensions": [],
+  "start_date": "2014-10-01",
+  "end_date": "2014-12-31",
+  "market": "EU",
+  "limit": 100
+}
