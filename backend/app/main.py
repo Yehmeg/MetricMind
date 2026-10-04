@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .contracts import Query, Result
 from .semantic import CATALOG, MockSemanticClient
+from .planner_api import router as planner_router
 
 app = FastAPI(title='MetricMind Backend', version='0.1.0',
               description='Milestone 1: structured queries against synthetic fixtures. No LLM or warehouse yet.')
@@ -19,3 +20,5 @@ def metrics():
 @app.post('/api/v1/query', response_model=Result)
 def query(request: Query):
     return client.execute(request)
+
+app.include_router(planner_router)
