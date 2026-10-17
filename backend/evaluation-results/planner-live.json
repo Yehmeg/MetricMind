@@ -1,0 +1,247 @@
+{
+  "started_at": "2026-10-17T10:16:10.745185+00:00",
+  "suite_version": "1",
+  "endpoint": "http://127.0.0.1:8001/api/v1/plan/llm",
+  "results": [
+    {
+      "id": "eu_quarter",
+      "question": "What were the revenue and reported profit in EU during Q4 2014?",
+      "expected_status": "ready",
+      "expected_query": {
+        "metrics": [
+          "revenue",
+          "reported_profit"
+        ],
+        "dimensions": [],
+        "market": "EU",
+        "start_date": "2014-10-01",
+        "end_date": "2014-12-31",
+        "limit": 100
+      },
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "ready",
+        "query": {
+          "metrics": [
+            "revenue",
+            "reported_profit"
+          ],
+          "dimensions": [],
+          "start_date": "2014-10-01",
+          "end_date": "2014-12-31",
+          "market": "EU",
+          "limit": 100
+        },
+        "message": "Preview of query for revenue and reported profit in EU during Q4 2014.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.548
+    },
+    {
+      "id": "group_category",
+      "question": "Show US revenue for 2014 by category.",
+      "expected_status": "ready",
+      "expected_query": {
+        "metrics": [
+          "revenue"
+        ],
+        "dimensions": [
+          "category"
+        ],
+        "market": "US",
+        "start_date": "2014-01-01",
+        "end_date": "2014-12-31",
+        "limit": 100
+      },
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "ready",
+        "query": {
+          "metrics": [
+            "revenue"
+          ],
+          "dimensions": [
+            "category"
+          ],
+          "start_date": "2014-01-01",
+          "end_date": "2014-12-31",
+          "market": "US",
+          "limit": 100
+        },
+        "message": "Preview: US revenue for 2014 broken down by category.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.174
+    },
+    {
+      "id": "all_markets",
+      "question": "Show shipping cost across all markets for Q1 2012 by market.",
+      "expected_status": "ready",
+      "expected_query": {
+        "metrics": [
+          "shipping_cost"
+        ],
+        "dimensions": [
+          "market"
+        ],
+        "market": null,
+        "start_date": "2012-01-01",
+        "end_date": "2012-03-31",
+        "limit": 100
+      },
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "ready",
+        "query": {
+          "metrics": [
+            "shipping_cost"
+          ],
+          "dimensions": [
+            "market"
+          ],
+          "start_date": "2012-01-01",
+          "end_date": "2012-03-31",
+          "market": null,
+          "limit": 100
+        },
+        "message": "Preview: shipping cost by market for Q1 2012.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.234
+    },
+    {
+      "id": "profit_margin",
+      "question": "What was reported profit margin for APAC during Q2 2013?",
+      "expected_status": "ready",
+      "expected_query": {
+        "metrics": [
+          "reported_profit_margin"
+        ],
+        "dimensions": [],
+        "market": "APAC",
+        "start_date": "2013-04-01",
+        "end_date": "2013-06-30",
+        "limit": 100
+      },
+      "passed": false,
+      "errors": [
+        "Incorrect query field: dimensions"
+      ],
+      "http_status": 200,
+      "response": {
+        "status": "ready",
+        "query": {
+          "metrics": [
+            "reported_profit_margin"
+          ],
+          "dimensions": [
+            "market"
+          ],
+          "start_date": "2013-04-01",
+          "end_date": "2013-06-30",
+          "market": "APAC",
+          "limit": 100
+        },
+        "message": "Previewing reported profit margin for APAC during Q2 2013 (April 1, 2013 \u2013 June 30, 2013).",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.311
+    },
+    {
+      "id": "missing_scope",
+      "question": "What is the revenue?",
+      "expected_status": "needs_clarification",
+      "expected_query": null,
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "needs_clarification",
+        "query": null,
+        "message": "Please specify the market (e.g., EU, US, LATAM, Africa, APAC, EMEA, Canada, or all markets) and the date range for the revenue query.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.162
+    },
+    {
+      "id": "relative_dates",
+      "question": "Show EU revenue for last quarter.",
+      "expected_status": "needs_clarification",
+      "expected_query": null,
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "needs_clarification",
+        "query": null,
+        "message": "Please specify the calendar year for the last quarter you are interested in (e.g., 2023 Q4).",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.215
+    },
+    {
+      "id": "material_cost",
+      "question": "Show material costs for EU in Q4 2014.",
+      "expected_status": "unsupported",
+      "expected_query": null,
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "unsupported",
+        "query": null,
+        "message": "The requested metric \"material costs\" is not supported by the available data set.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 0.95
+    },
+    {
+      "id": "unsupported_filter",
+      "question": "Show EU revenue for Q4 2014 excluding Furniture.",
+      "expected_status": "unsupported",
+      "expected_query": null,
+      "passed": true,
+      "errors": [],
+      "http_status": 200,
+      "response": {
+        "status": "unsupported",
+        "query": null,
+        "message": "The request includes a filter to exclude the Furniture category, which is not supported by the current query schema.",
+        "planner_mode": "llm",
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b",
+        "requires_review": true
+      },
+      "elapsed_seconds": 1.267
+    }
+  ],
+  "passed": 7,
+  "total": 8
+}

@@ -42,7 +42,11 @@ Unsupported comparisons, ranking, explanations, filters or metrics must return
 unsupported with query null; do not silently drop unsupported parts.
 All non-ready plans have query null. Ready plans must specify every Query field,
 including market null only for explicit all-markets scope. The message should
-explain the preview or request clarification, never invent numeric results.
+explain the preview or request clarification, never invent numeric results.Filters and grouping are separate. Mentioning a market sets the market filter;
+it does not request grouping. Set dimensions=[] unless the user explicitly
+requests a breakdown, such as "by market" or "by category".
+For example, "reported profit margin for APAC during Q2 2013" requires
+market="APAC" and dimensions=[].
 Schema: ''' + json.dumps(ProposedPlan.model_json_schema()) + '\nMetric definitions: ' + json.dumps(CATALOG)
 
 def propose(request: PlanRequest, provider: TextProvider) -> ProposedPlan:
