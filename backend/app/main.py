@@ -7,6 +7,9 @@ app = FastAPI(title='MetricMind Backend', version='0.1.0',
               description='Milestone 1: structured queries against synthetic fixtures. No LLM or warehouse yet.')
 client = MockSemanticClient()
 
+from .llm_api import router as llm_router
+
+app.include_router(llm_router)
 @app.get('/health')
 def health():
     return {'status': 'ok', 'mode': 'mock', 'contract_version': '0.1'}
