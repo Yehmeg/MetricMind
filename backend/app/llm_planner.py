@@ -7,10 +7,18 @@ from .planner import PlanRequest
 from .llm_provider import TextProvider, ProviderError
 from .semantic import CATALOG
 
+class LLMQuery(Query):
+    dimensions: list[Literal["market", "category"]] = Field(
+        ..., max_length=2
+    )
+    market: Literal[
+        "EU", "US", "LATAM", "Africa", "APAC", "EMEA", "Canada"
+    ] | None = Field(...)
+    limit: int = Field(..., ge=1, le=1000, strict=True)
 class ProposedPlan(BaseModel):
     model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)
     status: Literal['ready', 'needs_clarification', 'unsupported']
-    query: Query | None
+    query: LLMQuery | None
     message: str = Field(min_length=1, max_length=1000)
 
     @model_validator(mode='after')
