@@ -2,7 +2,7 @@
 
 import { useRef, useState, FormEvent, KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
-import { Send, Mic, Paperclip, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 
 interface ConversationInputProps {
   onSubmit: (question: string) => void;
@@ -100,22 +100,6 @@ export function ConversationInput({
               aria-describedby="input-hint"
             />
             <div className="flex items-center gap-1 p-1.5">
-              <button
-                type="button"
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                aria-label="Attach file"
-                disabled={disabled}
-              >
-                <Paperclip className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                aria-label="Voice input"
-                disabled={disabled}
-              >
-                <Mic className="h-5 w-5" />
-              </button>
               <button
                 type="submit"
                 disabled={!value.trim() || disabled}

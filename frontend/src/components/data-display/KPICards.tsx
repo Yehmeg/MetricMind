@@ -74,9 +74,19 @@ export function KPICards({ rows, metrics, dimensions }: KPICardsProps) {
 
     if (values.length === 0) return { metric, value: null, label: getMetricLabel(metric) };
 
-    let total: number;
+    let total: number | null;
     if (metric === 'reported_profit_margin') {
-      total = values.reduce((a, b) => a + b, 0) / values.length;
+      // Weighted margin is a ratio of sums, never the average of group margins.
+      // Requires revenue and profit columns in the returned rows.
+      const revenueTotal = rows
+        .map(r => parseFloat(r.revenue ?? ''))
+        .filter(v => !isNaN(v))
+        .reduce((a, b) => a + b, 0);
+      const profitTotal = rows
+        .map(r => parseFloat(r.reported_profit ?? ''))
+        .filter(v => !isNaN(v))
+        .reduce((a, b) => a + b, 0);
+      total = revenueTotal > 0 ? (profitTotal / revenueTotal) * 100 : null;
     } else {
       total = values.reduce((a, b) => a + b, 0);
     }
@@ -154,7 +164,9 @@ function getMetricLabel(metric: string): string {
   switch (metric) {
     case 'revenue': return 'Revenue';
     case 'reported_profit': return 'Profit';
-    case 'reported_profit_margin': return 'Profit Margin';
+    case 'reported_profit_margin':
+    case 'margin_pct': return 'Profit Margin';
+    case 'gross_profit': return 'Gross Profit';
     case 'shipping_cost': return 'Shipping Cost';
     default: return metric;
   }

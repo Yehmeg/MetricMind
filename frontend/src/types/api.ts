@@ -18,7 +18,11 @@ export interface QueryRequest {
 export interface QueryResponse {
   request_id: string;
   status: 'ok' | 'no_data';
-  source: 'mock_fixture';
+  // Data-source label from the backend Result contract. Today only the mock
+  // fixture exists ('mock_fixture'); the Label for Member 1's warehouse
+  // ('member1_warehouse') must be confirmed by the backend contract change
+  // before it can be relied on at runtime.
+  source: 'mock_fixture' | 'member1_warehouse';
   dataset_version: string;
   contract_version: string;
   query: QueryRequest;

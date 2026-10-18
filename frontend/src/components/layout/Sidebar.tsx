@@ -12,7 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -22,20 +21,30 @@ const navigation = [
   { name: 'Help', href: '/help', icon: HelpCircle },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+  onCollapseToggle: () => void;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+}
+
+export function Sidebar({ collapsed, onCollapseToggle, mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
       className={cn(
         'fixed left-0 top-0 z-40 h-screen border-r border-border bg-card transition-all duration-300 ease-in-out flex flex-col',
-        collapsed ? 'w-20' : 'w-64'
+        collapsed ? 'w-20' : 'w-64',
+        mobileOpen ? 'translate-x-0' : '-translate-x-full',
+        'lg:translate-x-0'
       )}
       aria-label="Main navigation"
+      aria-modal={mobileOpen ? true : undefined}
+      role={mobileOpen ? 'dialog' : undefined}
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-border">
-        <Link href="/" className="flex items-center gap-2" aria-label="MetricMind Home">
+        <Link href="/" className="flex items-center gap-2" aria-label="MetricMind Home" onClick={onMobileClose}>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Database className="h-5 w-5" aria-hidden="true" />
           </div>
@@ -44,7 +53,7 @@ export function Sidebar() {
           )}
         </Link>
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onCollapseToggle}
           className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-expanded={!collapsed}
@@ -60,6 +69,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={onMobileClose}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -68,6 +78,7 @@ export function Sidebar() {
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               )}
               aria-current={isActive ? 'page' : undefined}
+              title={collapsed ? item.name : undefined}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               {!collapsed && <span>{item.name}</span>}

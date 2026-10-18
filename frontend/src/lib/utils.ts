@@ -53,7 +53,10 @@ export function getMetricLabel(metric: string): string {
     case 'reported_profit':
       return 'Profit';
     case 'reported_profit_margin':
+    case 'margin_pct':
       return 'Profit Margin';
+    case 'gross_profit':
+      return 'Gross Profit';
     case 'shipping_cost':
       return 'Shipping Cost';
     default:

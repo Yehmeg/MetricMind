@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout';
 import { ConversationArea } from '@/components/conversation';
@@ -50,6 +48,8 @@ export default function Home() {
             <span className="text-muted-foreground">
               {backendStatus === 'connected' ? 'Backend connected' : backendStatus === 'checking' ? 'Connecting...' : 'Backend disconnected'}
             </span>
+            <span className="text-border">|</span>
+            <span className="text-muted-foreground">Demo data: synthetic</span>
             {health && (
               <>
                 <span className="text-border">|</span>

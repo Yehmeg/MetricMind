@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState, useReducer } from 'react';
 import { cn } from '@/lib/utils';
 import { ConversationInput } from './ConversationInput';
 import { MessageBubble } from './MessageBubble';
@@ -9,7 +9,6 @@ import { InspectionPanel } from './InspectionPanel';
 import type { ConversationMessage } from '@/lib/conversation';
 import type { QueryRequest, QueryResponse, PlanResponse } from '@/types/api';
 import { api, createQueryRequest } from '@/lib/api';
-import { useReducer } from 'react';
 import { conversationReducer, initialConversationState, ConversationAction } from '@/lib/conversation';
 
 interface ConversationAreaProps {
@@ -38,6 +37,10 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
     dispatch({ type: 'ADD_USER_MESSAGE', payload: { content: question } });
     dispatch({ type: 'SET_PROCESSING', payload: true });
 
+    // Reserve the assistant message id up front so later updates cannot miss
+    // due to stale state (state.messages is a snapshot from the current render).
+    const assistantId = crypto.randomUUID();
+
     try {
       // Step 1: Plan the query
       const plan = await api.plan(question);
@@ -46,6 +49,7 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
         dispatch({
           type: 'ADD_ASSISTANT_MESSAGE',
           payload: {
+            id: assistantId,
             content: '',
             timestamp: new Date(),
             status: 'complete',
@@ -60,6 +64,7 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
         dispatch({
           type: 'ADD_ASSISTANT_MESSAGE',
           payload: {
+            id: assistantId,
             content: '',
             timestamp: new Date(),
             status: 'error',
@@ -77,6 +82,7 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
         dispatch({
           type: 'ADD_ASSISTANT_MESSAGE',
           payload: {
+            id: assistantId,
             content: '',
             timestamp: new Date(),
             status: 'streaming',
@@ -92,34 +98,28 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
           const explanation = generateExplanation(response, plan.query);
 
           // Update message with complete response
-          const lastMessage = state.messages[state.messages.length - 1];
-          if (lastMessage && lastMessage.role === 'assistant') {
-            dispatch({
-              type: 'UPDATE_MESSAGE',
-              payload: {
-                id: lastMessage.id,
-                updates: {
-                  content: explanation,
-                  status: 'complete',
-                  response,
-                },
+          dispatch({
+            type: 'UPDATE_MESSAGE',
+            payload: {
+              id: assistantId,
+              updates: {
+                content: explanation,
+                status: 'complete',
+                response,
               },
-            });
-          }
+            },
+          });
         } catch (error) {
-          const lastMessage = state.messages[state.messages.length - 1];
-          if (lastMessage && lastMessage.role === 'assistant') {
-            dispatch({
-              type: 'UPDATE_MESSAGE',
-              payload: {
-                id: lastMessage.id,
-                updates: {
-                  status: 'error',
-                  error: error instanceof Error ? error.message : 'Failed to execute query',
-                },
+          dispatch({
+            type: 'UPDATE_MESSAGE',
+            payload: {
+              id: assistantId,
+              updates: {
+                status: 'error',
+                error: error instanceof Error ? error.message : 'Failed to execute query',
               },
-            });
-          }
+            },
+          });
         }
       }
     } catch (error) {
@@ -301,17 +301,17 @@ function getMetricLabel(metric: string): string {
   switch (metric) {
     case 'revenue': return 'Revenue';
     case 'reported_profit': return 'Profit';
-    case 'reported_profit_margin': return 'Profit Margin';
+    case 'reported_profit_margin':
+    case 'margin_pct': return 'Profit Margin';
+    case 'gross_profit': return 'Gross Profit';
     case 'shipping_cost': return 'Shipping Cost';
     default: return metric;
   }
 }
 
 const EXAMPLE_QUESTIONS = [
-  'Show EU revenue and profit for Q4 2014 by category',
-  'Show all markets revenue for Q4 2014',
-  'Show US profit margin for Q3 2014 by category',
-  'Show EU shipping cost for Q4 2014 by category',
+  'Show Europe revenue and profit for Q3 2026 by category',
+  'Show all markets revenue for Q2 2026',
+  'Show North America profit for Q2 2026 by category',
+  'Show Europe shipping cost for Q3 2026',
 ];
-
-import { useState } from 'react';

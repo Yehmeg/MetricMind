@@ -4,10 +4,10 @@ import { cn } from '@/lib/utils';
 import { Database, MessageSquare, Sparkles, BarChart3, HelpCircle, Loader2 } from 'lucide-react';
 
 const EXAMPLE_QUESTIONS = [
-  'Show EU revenue and profit for Q4 2014 by category',
-  'Show all markets revenue for Q4 2014',
-  'Show US profit margin for Q3 2014 by category',
-  'Show EU shipping cost for Q4 2014 by category',
+  'Show Europe revenue and profit for Q3 2026 by category',
+  'Show all markets revenue for Q2 2026',
+  'Show North America profit for Q2 2026 by category',
+  'Show Europe shipping cost for Q3 2026',
 ];
 
 interface ConversationEmptyProps {
@@ -21,9 +21,13 @@ export function ConversationEmpty({ onExampleClick }: ConversationEmptyProps) {
         <Database className="h-10 w-10 text-primary" aria-hidden="true" />
       </div>
       <h2 className="mb-2 text-2xl font-semibold text-foreground">Start a conversation</h2>
-      <p className="mb-8 max-w-md text-muted-foreground">
+      <p className="max-w-md text-muted-foreground">
         Ask questions about your business data in natural language. MetricMind will translate your
         question into a governed semantic query and return visualizations, KPIs, and explanations.
+      </p>
+      <p className="mb-8 mt-3 max-w-md text-xs text-muted-foreground/80">
+        Note: answers are currently generated from a synthetic demo dataset. The governed
+        warehouse is not connected yet and results are not real business data.
       </p>
 
       <div className="w-full max-w-2xl space-y-4">

@@ -367,7 +367,9 @@ function getMetricLabel(metric: string): string {
   switch (metric) {
     case 'revenue': return 'Revenue';
     case 'reported_profit': return 'Profit';
-    case 'reported_profit_margin': return 'Profit Margin';
+    case 'reported_profit_margin':
+    case 'margin_pct': return 'Profit Margin';
+    case 'gross_profit': return 'Gross Profit';
     case 'shipping_cost': return 'Shipping Cost';
     default: return metric;
   }
