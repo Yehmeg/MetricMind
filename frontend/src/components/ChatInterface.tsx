@@ -325,7 +325,7 @@ function getMetricFormatter(metric: string) {
     case 'revenue':
     case 'reported_profit':
     case 'shipping_cost':
-      return (v: string | null) => v ? `$${parseFloat(v).toLocaleString()}` : '—';
+      return (v: string | null) => v ? `${parseFloat(v).toLocaleString()}` : '—';
     case 'reported_profit_margin':
       return (v: string | null) => v ? `${parseFloat(v).toFixed(1)}%` : '—';
     default:

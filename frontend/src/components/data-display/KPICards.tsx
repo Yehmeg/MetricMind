@@ -150,7 +150,7 @@ function KPICard({ metric, label, value, color, icon, groupCount }: KPICardProps
           ) : metric === 'reported_profit_margin' ? (
             `${value.toFixed(1)}%`
           ) : ['revenue', 'reported_profit', 'shipping_cost'].includes(metric) ? (
-            `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+            value.toLocaleString(undefined, { maximumFractionDigits: 0 })
           ) : (
             value.toLocaleString()
           )}

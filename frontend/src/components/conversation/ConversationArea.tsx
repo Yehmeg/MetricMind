@@ -277,7 +277,7 @@ function generateExplanation(response: QueryResponse, query: QueryRequest): stri
       if (isNaN(num)) return `${getMetricLabel(m)}: ${value}`;
       if (m === 'reported_profit_margin') return `${getMetricLabel(m)}: ${num.toFixed(1)}%`;
       if (['revenue', 'reported_profit', 'shipping_cost'].includes(m)) {
-        return `${getMetricLabel(m)}: $${num.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        return `${getMetricLabel(m)}: ${num.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
       }
       return `${getMetricLabel(m)}: ${num.toLocaleString()}`;
     });

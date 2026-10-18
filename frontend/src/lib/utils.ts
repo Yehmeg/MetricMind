@@ -15,13 +15,16 @@ export function formatNumber(value: string | null | undefined): string {
   return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
-export function formatCurrency(value: string | null | undefined): string {
+/**
+ * Monetary metrics (revenue, reported_profit, shipping_cost). The backend mock
+ * catalog explicitly does not assert a currency and the Result contract carries
+ * no currency metadata, so values are shown without a currency symbol.
+ */
+export function formatMonetary(value: string | null | undefined): string {
   if (value === null || value === undefined || value === '') return '—';
   const num = parseFloat(value);
   if (isNaN(num)) return value;
   return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(num);
 }
@@ -38,7 +41,7 @@ export function getMetricFormatter(metric: string) {
     case 'revenue':
     case 'reported_profit':
     case 'shipping_cost':
-      return formatCurrency;
+      return formatMonetary;
     case 'reported_profit_margin':
       return formatPercent;
     default:
