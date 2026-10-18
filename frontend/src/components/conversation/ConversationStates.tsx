@@ -1,13 +1,13 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Database, MessageSquare, Sparkles, BarChart3, HelpCircle, Loader2 } from 'lucide-react';
+import { Database, Sparkles, Loader2 } from 'lucide-react';
 
 const EXAMPLE_QUESTIONS = [
-  'Show Europe revenue and profit for Q3 2026 by category',
-  'Show all markets revenue for Q2 2026',
-  'Show North America profit for Q2 2026 by category',
-  'Show Europe shipping cost for Q3 2026',
+  'Show EU revenue and profit for Q4 2014 by category',
+  'Show all markets revenue for 2014',
+  'Show US shipping cost for Q4 2014',
+  'Show APAC profit for Q3 2014 by category',
 ];
 
 interface ConversationEmptyProps {
@@ -16,51 +16,62 @@ interface ConversationEmptyProps {
 
 export function ConversationEmpty({ onExampleClick }: ConversationEmptyProps) {
   return (
-    <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-      <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
-        <Database className="h-10 w-10 text-primary" aria-hidden="true" />
+    <div className="flex min-h-full flex-1 flex-col items-center justify-center px-2 py-10 text-center">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+        <Database className="h-8 w-8 text-primary" aria-hidden="true" />
       </div>
-      <h2 className="mb-2 text-2xl font-semibold text-foreground">Start a conversation</h2>
-      <p className="max-w-md text-muted-foreground">
+      <h2 className="mb-3 text-3xl font-semibold tracking-tight text-foreground">Start a conversation</h2>
+      <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
         Ask questions about your business data in natural language. MetricMind will translate your
         question into a governed semantic query and return visualizations, KPIs, and explanations.
       </p>
-      <p className="mb-8 mt-3 max-w-md text-xs text-muted-foreground/80">
+      <p className="mt-4 max-w-lg rounded-lg border border-border/50 bg-muted/40 px-4 py-2 text-xs text-muted-foreground/80">
         Note: answers are currently generated from a synthetic demo dataset. The governed
         warehouse is not connected yet and results are not real business data.
       </p>
 
-      <div className="w-full max-w-2xl space-y-4">
-        <p className="text-sm font-medium text-muted-foreground">Try one of these examples:</p>
-        <div className="grid gap-3 sm:grid-cols-2">
+      <div className="mt-10 w-full">
+        <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+          Try one of these examples
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {EXAMPLE_QUESTIONS.map((question, i) => (
             <button
               key={i}
               onClick={() => onExampleClick(question)}
               className={cn(
-                'relative p-4 text-left text-sm border rounded-xl transition-all',
-                'bg-card border-border hover:border-primary/50 hover:bg-primary/5',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+                'group relative rounded-xl border p-5 text-left transition-all',
+                'bg-card hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
               )}
             >
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Sparkles className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <span className="flex-1 text-foreground">{question}</span>
-                <HelpCircle className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <span className="flex-1 pt-1 text-[0.95rem] font-medium leading-snug text-foreground">
+                  {question}
+                </span>
               </div>
             </button>
           ))}
         </div>
 
-        <div className="pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">
-            Supported metrics: Revenue, Profit, Profit Margin, Shipping Cost
-            <br />
-            Supported dimensions: Market, Category
-            <br />
-            Date format: Q4 2014, 2014, or specific dates
+        <div className="mt-6 rounded-xl border border-border/50 bg-muted/30 px-5 py-4 text-left">
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            <span className="font-medium text-foreground">Supported metrics:</span> Revenue, Profit,
+            Profit Margin, Shipping Cost
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+            <span className="font-medium text-foreground">Supported dimensions:</span> Market, Category
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+            <span className="font-medium text-foreground">Date range:</span> a quarter with a year (for
+            example, Q4 2014) or a full year (for example, 2014)
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+            <span className="font-medium text-foreground">Markets:</span> EU, US, LATAM, Africa, APAC,
+            EMEA, Canada — or all markets
           </p>
         </div>
       </div>

@@ -14,7 +14,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen overflow-hidden bg-background flex">
       <Sidebar
         collapsed={collapsed}
         onCollapseToggle={() => setCollapsed(prev => !prev)}
@@ -23,12 +23,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       />
       <div
         className={cn(
-          'flex-1 flex flex-col min-w-0 transition-all duration-300',
+          'flex-1 flex flex-col min-w-0 h-screen transition-all duration-300',
           collapsed ? 'lg:ml-20' : 'lg:ml-64'
         )}
       >
         <Header onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {children}
         </main>
       </div>

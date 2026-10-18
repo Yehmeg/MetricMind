@@ -35,39 +35,41 @@ export default function Home() {
 
   return (
     <DashboardLayout>
-      <ConversationArea />
-      
-      {/* Status Bar */}
-      <footer className="border-t border-border bg-background/50 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto flex items-center justify-between text-xs p-4">
-          <div className="flex items-center gap-2">
-            <span className={`
-              w-2 h-2 rounded-full
-              ${backendStatus === 'connected' ? 'bg-green-500' : backendStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'}
-            `} />
-            <span className="text-muted-foreground">
-              {backendStatus === 'connected' ? 'Backend connected' : backendStatus === 'checking' ? 'Connecting...' : 'Backend disconnected'}
-            </span>
-            <span className="text-border">|</span>
-            <span className="text-muted-foreground">Demo data: synthetic</span>
-            {health && (
-              <>
-                <span className="text-border">|</span>
-                <span className="text-muted-foreground">Mode: {health.mode}</span>
-                <span className="text-border">|</span>
-                <span className="text-muted-foreground">Contract: {health.contract_version}</span>
-              </>
-            )}
+      <div className="flex h-full min-h-0 flex-col">
+        <ConversationArea />
+
+        {/* Status Bar */}
+        <footer className="shrink-0 border-t border-border bg-background/50 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 text-xs">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className={`
+                h-2 w-2 rounded-full flex-shrink-0
+                ${backendStatus === 'connected' ? 'bg-green-500' : backendStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'}
+              `} aria-hidden="true" />
+              <span className="text-muted-foreground">
+                {backendStatus === 'connected' ? 'Backend connected' : backendStatus === 'checking' ? 'Connecting...' : 'Backend disconnected'}
+              </span>
+              <span className="text-border">|</span>
+              <span className="text-muted-foreground">Demo data: synthetic</span>
+              {health && (
+                <>
+                  <span className="text-border">|</span>
+                  <span className="text-muted-foreground">Mode: {health.mode}</span>
+                  <span className="text-border">|</span>
+                  <span className="text-muted-foreground">Contract: {health.contract_version}</span>
+                </>
+              )}
+            </div>
+            <div className="flex flex-shrink-0 items-center gap-4 text-muted-foreground">
+              <span>MetricMind v0.1</span>
+              <a href="https://github.com/Yehmeg/MetricMind" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors flex items-center gap-0.5">
+                <Github className="h-4 w-4" aria-hidden="true" />
+                GitHub
+              </a>
+            </div>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <span>MetricMind v0.1</span>
-            <a href="https://github.com/Yehmeg/MetricMind" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors flex items-center gap-1">
-              <Github className="h-4 w-4" />
-              GitHub
-            </a>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </DashboardLayout>
   );
 }

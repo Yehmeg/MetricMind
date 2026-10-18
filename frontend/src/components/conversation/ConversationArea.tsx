@@ -186,19 +186,19 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
   };
 
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* Messages area */}
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      {/* Messages area - the primary scroll container */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
         role="log"
         aria-live="polite"
         aria-label="Conversation"
       >
-        {state.messages.length === 0 && !state.isProcessing && (
-          <ConversationEmpty onExampleClick={handleExampleClick} />
-        )}
-
+        <div className="mx-auto flex min-h-full w-full max-w-4xl flex-col gap-4 px-4 py-6 md:px-6">
+          {state.messages.length === 0 && !state.isProcessing && (
+            <ConversationEmpty onExampleClick={handleExampleClick} />
+          )}
         {state.messages.length > 0 && (
           <>
             {state.messages.map((message, index) => (
@@ -219,7 +219,8 @@ export function ConversationArea({ initialMessages = [] }: ConversationAreaProps
           </>
         )}
 
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="shrink-0" />
+        </div>
       </div>
 
       {/* Input area */}
@@ -310,8 +311,8 @@ function getMetricLabel(metric: string): string {
 }
 
 const EXAMPLE_QUESTIONS = [
-  'Show Europe revenue and profit for Q3 2026 by category',
-  'Show all markets revenue for Q2 2026',
-  'Show North America profit for Q2 2026 by category',
-  'Show Europe shipping cost for Q3 2026',
+  'Show EU revenue and profit for Q4 2014 by category',
+  'Show all markets revenue for 2014',
+  'Show US shipping cost for Q4 2014',
+  'Show APAC profit for Q3 2014 by category',
 ];
