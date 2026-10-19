@@ -1,0 +1,83 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function formatNumber(value: string | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '—';
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+  if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+  if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
+  return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+/**
+ * Monetary metrics (revenue, reported_profit, shipping_cost). The backend mock
+ * catalog explicitly does not assert a currency and the Result contract carries
+ * no currency metadata, so values are shown without a currency symbol.
+ */
+export function formatMonetary(value: string | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '—';
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0,
+  }).format(num);
+}
+
+export function formatPercent(value: string | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '—';
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  return `${num.toFixed(1)}%`;
+}
+
+export function getMetricFormatter(metric: string) {
+  switch (metric) {
+    case 'revenue':
+    case 'reported_profit':
+    case 'shipping_cost':
+      return formatMonetary;
+    case 'reported_profit_margin':
+      return formatPercent;
+    default:
+      return formatNumber;
+  }
+}
+
+export function getMetricLabel(metric: string): string {
+  switch (metric) {
+    case 'revenue':
+      return 'Revenue';
+    case 'reported_profit':
+      return 'Profit';
+    case 'reported_profit_margin':
+    case 'margin_pct':
+      return 'Profit Margin';
+    case 'gross_profit':
+      return 'Gross Profit';
+    case 'shipping_cost':
+      return 'Shipping Cost';
+    default:
+      return metric;
+  }
+}
+
+export function getMetricColor(metric: string): string {
+  switch (metric) {
+    case 'revenue':
+      return 'blue';
+    case 'reported_profit':
+      return 'green';
+    case 'reported_profit_margin':
+      return 'purple';
+    case 'shipping_cost':
+      return 'orange';
+    default:
+      return 'gray';
+  }
+}
