@@ -14,6 +14,7 @@ import {
   Code,
   FileText,
   AlertTriangle,
+  Inbox,
 } from 'lucide-react';
 import type { ConversationMessage } from '@/lib/conversation';
 import type { QueryRequest, QueryResponse } from '@/types/api';
@@ -102,11 +103,17 @@ export function MessageBubble({ message, onRetry, onInspect }: MessageBubbleProp
           )}
 
           {/* Main content - AI explanation */}
-          <div className={cn('text-foreground', isStreaming && 'text-muted-foreground')}>
+          <div className={cn('text-foreground', isStreaming && 'text-muted-foreground')} aria-live="polite">
             {message.content ? formatContent(message.content) : (
               isStreaming && <StreamingPlaceholder />
             )}
           </div>
+
+          {/* Empty result state: a successful query whose response has no rows.
+              Kept visually distinct from errors and from zero values. */}
+          {!isError && !isStreaming && message.response && message.response.rows.length === 0 && (
+            <EmptyResultState warnings={message.response.warnings} />
+          )}
 
           {/* Data visualization section */}
           {hasData && message.response && (
@@ -164,7 +171,7 @@ export function MessageBubble({ message, onRetry, onInspect }: MessageBubbleProp
 
           {/* Error state */}
           {isError && (
-            <div className="mt-3 flex items-center gap-2">
+            <div role="alert" className="mt-3 flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-destructive" aria-hidden="true" />
               <span className="text-sm text-destructive">{message.error || 'An error occurred'}</span>
               <button
@@ -219,10 +226,35 @@ function UnsupportedBanner({ message }: { message: string }) {
 
 function StreamingPlaceholder() {
   return (
-    <div className="space-y-3 animate-pulse">
+    <div className="space-y-3 animate-pulse" role="status" aria-label="Assistant response loading">
       <div className="h-4 bg-muted rounded w-3/4" />
       <div className="h-4 bg-muted rounded w-1/2" />
       <div className="h-4 bg-muted rounded w-5/6" />
+    </div>
+  );
+}
+
+function EmptyResultState({ warnings }: { warnings: string[] }) {
+  return (
+    <div role="status" className="mt-3 rounded-lg border border-border bg-muted/30 p-4">
+      <div className="flex items-center gap-2 mb-1">
+        <Inbox className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        <p className="text-sm font-medium text-foreground">Query succeeded, but no data matched</p>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        The backend returned no rows for this metric, date range and market filter.
+        This is an empty result, not an error and not zero: no values were measured.
+        Try a wider date range, a different market, or fewer filters.
+      </p>
+      {warnings.length > 0 && (
+        <ul className="mt-2 space-y-1 text-xs text-muted-foreground" aria-label="Backend warnings">
+          {warnings.map((warning, i) => (
+            <li key={i} className="flex items-start gap-1.5">
+              <span aria-hidden="true">&bull;</span> {warning}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

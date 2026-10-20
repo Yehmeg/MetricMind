@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode, ReactElement, createElement } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, createElement } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -14,10 +14,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light');
-  const [mounted, setMounted] = useState(false);
 
+  // Read the stored/system preference after mount; SSR/hydration render light.
   useEffect(() => {
-    setMounted(true);
     const stored = localStorage.getItem('theme') as Theme | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initial = stored || (prefersDark ? 'dark' : 'light');
@@ -35,12 +34,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
-  // During SSR, mounted is false, so we render children without the provider
-  // The useTheme hook will return a default value during SSR
-  if (!mounted) {
-    return children as ReactElement;
-  }
-
   return createElement(
     ThemeContext.Provider,
     { value: { theme, toggleTheme, setTheme } },
@@ -50,7 +43,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  // During SSR, context will be undefined, so return a default theme
   if (!context) {
     return {
       theme: 'light' as Theme,

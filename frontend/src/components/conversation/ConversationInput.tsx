@@ -2,7 +2,7 @@
 
 import { useRef, useState, FormEvent, KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
-import { Send, Mic, Paperclip, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 
 interface ConversationInputProps {
   onSubmit: (question: string) => void;
@@ -58,18 +58,17 @@ export function ConversationInput({
   };
 
   return (
-    <div className="border-t border-border bg-background/50 backdrop-blur-sm">
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4">
+    <div className="shrink-0 border-t border-border bg-background/80 backdrop-blur-sm">
+      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-4xl px-4 py-4 md:px-6">
         {/* Suggestions */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-2 animate-fade-in" role="listbox" aria-label="Suggested questions">
+          <div className="mb-3 flex flex-wrap gap-2 animate-fade-in" aria-label="Suggested questions">
             {suggestions.map((suggestion, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => handleSuggestionClick(suggestion)}
                 className="px-3 py-1.5 text-sm text-muted-foreground bg-muted/50 border border-border/50 rounded-lg hover:bg-muted hover:text-foreground transition-colors"
-                role="option"
               >
                 {suggestion}
               </button>
@@ -77,60 +76,39 @@ export function ConversationInput({
           </div>
         )}
 
-        <div className="relative">
-          <div className="relative flex items-end gap-2">
-            <textarea
-              ref={textareaRef}
-              value={value}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              disabled={disabled}
-              rows={1}
-              style={{ height: `${height}px` }}
-              className={cn(
-                'flex-1 min-h-[44px] max-h-[200px] pr-16 py-3 px-4',
-                'bg-background border border-border rounded-xl',
-                'text-foreground placeholder:text-muted-foreground',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
-                'resize-none transition-colors',
-                disabled && 'opacity-50 cursor-not-allowed'
-              )}
-              aria-label="Question input"
-              aria-describedby="input-hint"
-            />
-            <div className="flex items-center gap-1 p-1.5">
-              <button
-                type="button"
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                aria-label="Attach file"
-                disabled={disabled}
-              >
-                <Paperclip className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                aria-label="Voice input"
-                disabled={disabled}
-              >
-                <Mic className="h-5 w-5" />
-              </button>
-              <button
-                type="submit"
-                disabled={!value.trim() || disabled}
-                className={cn(
-                  'p-2 rounded-lg transition-colors flex items-center justify-center',
-                  'bg-primary text-primary-foreground hover:bg-primary/90',
-                  'disabled:opacity-50 disabled:cursor-not-allowed',
-                  value.trim() && !disabled && 'animate-pulse-soft'
-                )}
-                aria-label="Send question"
-              >
-                {disabled ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
+        <div className="relative flex items-end">
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={disabled}
+            rows={1}
+            style={{ height: `${height}px` }}
+            className={cn(
+              'flex-1 min-h-[44px] max-h-[200px] py-3 pl-4 pr-14',
+              'bg-background border border-border rounded-xl',
+              'text-foreground placeholder:text-muted-foreground',
+              'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
+              'resize-none transition-colors',
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+            aria-label="Question input"
+            aria-describedby="input-hint"
+          />
+          <button
+            type="submit"
+            disabled={!value.trim() || disabled}
+            className={cn(
+              'absolute bottom-1.5 right-1.5 p-2 rounded-lg transition-colors flex items-center justify-center',
+              'bg-primary text-primary-foreground hover:bg-primary/90',
+              'disabled:opacity-50 disabled:cursor-not-allowed'
+            )}
+            aria-label="Send question"
+          >
+            {disabled ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+          </button>
         </div>
 
         <p id="input-hint" className="mt-2 text-center text-xs text-muted-foreground">

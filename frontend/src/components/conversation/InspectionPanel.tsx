@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, Copy, Code, FileText, AlertTriangle, Database, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { api, SqlInspectionResult, SQL_INSPECTION_UNAVAILABLE } from '@/lib/api';
 import type { QueryRequest, QueryResponse } from '@/types/api';
 
 interface InspectionPanelProps {
@@ -84,7 +85,7 @@ export function InspectionPanel({ message, onClose }: InspectionPanelProps) {
             <APICallView query={query} onCopy={copyToClipboard} copied={copied} />
           )}
           {activeTab === 'sql' && (
-            <SQLView query={query} response={response} onCopy={copyToClipboard} copied={copied} />
+            <SQLView requestId={response.request_id} onCopy={copyToClipboard} copied={copied} />
           )}
           {activeTab === 'metrics' && (
             <MetricDefinitionsView definitions={response.metric_definitions} onCopy={copyToClipboard} copied={copied} />
@@ -176,16 +177,58 @@ function APICallView({ query, onCopy, copied }: { query: QueryRequest; onCopy: (
   );
 }
 
-function SQLView({ query, response, onCopy, copied }: { query: QueryRequest; response: QueryResponse; onCopy: (text: string, label: string) => void; copied: string | null }) {
-  // In the mock backend, SQL is not generated. This would come from the Semantic Layer in production.
-  const exampleSQL = generateExampleSQL(query);
+function SQLView({ requestId, onCopy, copied }: { requestId: string; onCopy: (text: string, label: string) => void; copied: string | null }) {
+  const [state, setState] = useState<SqlInspectionResult | 'loading' | 'error'>('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+    setState('loading');
+    api.sql(requestId)
+      .then(result => {
+        if (!cancelled) setState(result);
+      })
+      .catch(() => {
+        if (!cancelled) setState({ available: false, reason: SQL_INSPECTION_UNAVAILABLE });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [requestId]);
+
+  if (state === 'loading') {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <Database className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+        <p>Loading SQL inspection...</p>
+      </div>
+    );
+  }
+
+  if (state === 'error' || !state.available) {
+    return (
+      <div className="space-y-4">
+        <h3 className="font-medium text-foreground">Generated SQL</h3>
+        <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-yellow-600 dark:text-yellow-400" aria-hidden="true" />
+          <div>
+            <p className="text-sm text-yellow-600 dark:text-yellow-400">
+              {state === 'error' || state.available || !state.reason ? SQL_INSPECTION_UNAVAILABLE : state.reason}
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              In production, the compiled SQL will be shown here once the backend exposes it.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-foreground">Generated SQL</h3>
         <button
-          onClick={() => onCopy(exampleSQL, 'SQL')}
+          onClick={() => onCopy(state.sql, 'SQL')}
           className={cn(
             'flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg transition-colors',
             copied === 'SQL'
@@ -201,53 +244,12 @@ function SQLView({ query, response, onCopy, copied }: { query: QueryRequest; res
       <div className="rounded-lg border border-border/50 overflow-hidden">
         <div className="bg-muted/50 px-4 py-2 border-b border-border/50 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">SQL</span>
-          <span>Mock backend - example generated SQL</span>
+          <span>Compiled by the backend Semantic Layer</span>
         </div>
-        <pre className="p-4 font-mono text-sm text-foreground overflow-x-auto">{exampleSQL}</pre>
-      </div>
-
-      <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-        <div className="flex items-center gap-2 text-primary mb-2">
-          <Database className="w-4 h-4" />
-          <span className="font-medium">Note</span>
-        </div>
-        <p className="text-sm text-primary">
-          SQL generation is handled by the Semantic Layer (Cube.dev/dbt) and is not available in the mock backend.
-          In the production integration, the compiled SQL would be displayed here.
-        </p>
+        <pre className="p-4 font-mono text-sm text-foreground overflow-x-auto whitespace-pre-wrap break-all">{state.sql}</pre>
       </div>
     </div>
   );
-}
-
-function generateExampleSQL(query: QueryRequest): string {
-  const metrics = query.metrics.map(m => {
-    switch (m) {
-      case 'revenue': return 'SUM(sales) as revenue';
-      case 'reported_profit': return 'SUM(profit) as reported_profit';
-      case 'reported_profit_margin': return '100 * SUM(profit) / NULLIF(SUM(sales), 0) as reported_profit_margin';
-      case 'shipping_cost': return 'SUM(shipping_cost) as shipping_cost';
-      default: return m;
-    }
-  }).join(', ');
-
-  const dimensions = query.dimensions.join(', ');
-  const groupBy = dimensions ? `GROUP BY ${dimensions}` : '';
-  const orderBy = dimensions ? `ORDER BY ${dimensions}` : '';
-  const where = [];
-  
-  where.push(`order_date BETWEEN '${query.start_date}' AND '${query.end_date}'`);
-  if (query.market) where.push(`market = '${query.market}'`);
-  
-  const whereClause = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
-
-  return `-- Generated by MetricMind Semantic Layer
-SELECT ${dimensions ? dimensions + ', ' : ''}${metrics}
-FROM superstore_facts
-${whereClause}
-${groupBy}
-${orderBy}
-LIMIT ${query.limit};`;
 }
 
 function MetricDefinitionsView({ 
@@ -367,7 +369,9 @@ function getMetricLabel(metric: string): string {
   switch (metric) {
     case 'revenue': return 'Revenue';
     case 'reported_profit': return 'Profit';
-    case 'reported_profit_margin': return 'Profit Margin';
+    case 'reported_profit_margin':
+    case 'margin_pct': return 'Profit Margin';
+    case 'gross_profit': return 'Gross Profit';
     case 'shipping_cost': return 'Shipping Cost';
     default: return metric;
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatPercent, getMetricLabel, getMetricColor } from '@/lib/utils';
+import { formatPercent, getMetricLabel, getMetricColor } from '@/lib/utils';
 import type { Metric } from '@/types/api';
 
 interface KPICardsProps {
@@ -59,7 +59,7 @@ export function KPICards({ rows, metrics, dimensions }: KPICardsProps) {
             {value === null ? '—' : metric === 'reported_profit_margin' 
               ? `${value.toFixed(1)}%` 
               : metric === 'revenue' || metric === 'reported_profit' || metric === 'shipping_cost'
-                ? `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                ? value.toLocaleString(undefined, { maximumFractionDigits: 0 })
                 : value.toLocaleString()}
           </div>
           {dimensions.length > 0 && (

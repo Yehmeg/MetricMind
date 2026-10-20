@@ -150,26 +150,16 @@ function APICallView({ data, onCopy, copied }: { data: InspectionData; onCopy: (
           );
         })}
 
-        {/* SQL Section (placeholder since mock doesn't generate SQL) */}
+        {/* SQL Section (the mock backend does not expose SQL inspection) */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center gap-2 text-yellow-800 mb-2">
             <Database className="w-4 h-4" />
             <span className="font-medium">Generated SQL</span>
           </div>
           <p className="text-sm text-yellow-700">
-            SQL generation is handled by the Semantic Layer (Cube.dev/dbt) and is not available in the mock backend.
-            In the production integration, the compiled SQL would be displayed here.
+            SQL inspection is unavailable because the current backend does not expose this endpoint.
+            In production, the compiled SQL will be shown here once the backend exposes it.
           </p>
-          <div className="mt-3 p-3 bg-white rounded border border-yellow-200 font-mono text-xs text-gray-500">
-            -- Example of what SQL might look like:
-            -- SELECT market, category, SUM(sales) as revenue, SUM(profit) as reported_profit
-            -- FROM superstore_facts
-            -- WHERE order_date BETWEEN '2014-10-01' AND '2014-12-31'
-            --   AND market = 'EU'
-            -- GROUP BY market, category
-            -- ORDER BY market, category
-            -- LIMIT 100
-          </div>
         </div>
       </div>
     </div>

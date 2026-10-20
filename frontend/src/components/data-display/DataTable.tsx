@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronUp, ChevronDown, ChevronsUpDown, Maximize2, Copy } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronsUpDown, Maximize2, Copy, Check } from 'lucide-react';
 import type { Metric } from '@/types/api';
 import { getMetricLabel, getMetricFormatter } from '@/lib/utils';
 
@@ -185,5 +185,3 @@ export function DataTable({ rows, metrics, dimensions, pageSize = 10 }: DataTabl
     </div>
   );
 }
-
-import { Check } from 'lucide-react';

@@ -20,7 +20,7 @@ export interface ConversationState {
 
 export type ConversationAction =
   | { type: 'ADD_USER_MESSAGE'; payload: { content: string } }
-  | { type: 'ADD_ASSISTANT_MESSAGE'; payload: Omit<ConversationMessage, 'id' | 'role'> }
+  | { type: 'ADD_ASSISTANT_MESSAGE'; payload: Omit<ConversationMessage, 'id' | 'role'> & { id?: string } }
   | { type: 'UPDATE_MESSAGE'; payload: { id: string; updates: Partial<ConversationMessage> } }
   | { type: 'SET_PROCESSING'; payload: boolean }
   | { type: 'CLEAR_CONVERSATION' }
@@ -47,10 +47,11 @@ export function conversationReducer(state: ConversationState, action: Conversati
       };
     }
     case 'ADD_ASSISTANT_MESSAGE': {
+      const { id, ...rest } = action.payload;
       const newMessage: ConversationMessage = {
-        id: crypto.randomUUID(),
+        id: id ?? crypto.randomUUID(),
         role: 'assistant',
-        ...action.payload,
+        ...rest,
       };
       return {
         ...state,

@@ -1,8 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useTheme } from '@/lib/theme';
-import { cn } from '@/lib/utils';
-import { Sun, Moon, Bell, User, Menu, X } from 'lucide-react';
+import { Sun, Moon, User, Menu, Settings, HelpCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
@@ -41,14 +41,6 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
         </button>
 
-        <button
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" aria-hidden="true" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" aria-label="3 unread notifications" />
-        </button>
-
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -66,19 +58,22 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
                 <p className="text-sm font-medium text-foreground">Analyst User</p>
                 <p className="text-xs text-muted-foreground">analyst@metricmind.io</p>
               </div>
-              <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+              <Link
+                href="/settings"
+                onClick={() => setShowUserMenu(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
                 <Settings className="h-4 w-4" />
                 Settings
-              </button>
-              <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+              </Link>
+              <Link
+                href="/help"
+                onClick={() => setShowUserMenu(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
                 <HelpCircle className="h-4 w-4" />
                 Help & Docs
-              </button>
-              <hr className="my-1 border-border" />
-              <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-accent hover:text-destructive transition-colors">
-                <LogOut className="h-4 w-4" />
-                Sign out
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -86,5 +81,3 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
     </header>
   );
 }
-
-import { Settings, HelpCircle, LogOut } from 'lucide-react';

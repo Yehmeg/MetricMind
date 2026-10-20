@@ -12,10 +12,16 @@ import {
   DatasetComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { cn } from '@/lib/utils';
 import type { Metric } from '@/types/api';
 
 echarts.use([BarChart, LineChart, PieChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, DatasetComponent, CanvasRenderer]);
+
+// Preserve null (e.g. unavailable margins) instead of plotting them as zero.
+function toMetricValue(value: string | null | undefined): number | null {
+  if (value === null || value === undefined || value === '') return null;
+  const num = parseFloat(value);
+  return isNaN(num) ? null : num;
+}
 
 interface ChartContainerProps {
   rows: Record<string, string | null>[];
@@ -49,7 +55,7 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
       type: effectiveType === 'pie' ? 'pie' : effectiveType,
       data: rows.map(row => ({
         name: row[xKey] || `Group ${rows.indexOf(row) + 1}`,
-        value: row[metric] ? parseFloat(row[metric]) : 0,
+        value: toMetricValue(row[metric]),
       })),
       itemStyle: { color: colors[i % colors.length] },
     }));
@@ -66,7 +72,7 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
           center: ['50%', '60%'],
           data: rows.map(row => ({
             name: row[xKey] || `Group ${rows.indexOf(row) + 1}`,
-            value: row[metric] ? parseFloat(row[metric]) : 0,
+            value: toMetricValue(row[metric]),
           })),
           itemStyle: { borderRadius: 4 },
         })),
@@ -122,12 +128,12 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
 
   const formatValue = (value: number, seriesName: string) => {
     const isPercent = seriesName.toLowerCase().includes('margin');
-    const isCurrency = seriesName.toLowerCase().includes('revenue') ||
+    const isMonetary = seriesName.toLowerCase().includes('revenue') ||
       seriesName.toLowerCase().includes('profit') ||
       seriesName.toLowerCase().includes('shipping');
 
     if (isPercent) return `${value.toFixed(1)}%`;
-    if (isCurrency) return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    if (isMonetary) return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
     return value.toLocaleString();
   };
 
@@ -135,7 +141,9 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
     switch (metric) {
       case 'revenue': return 'Revenue';
       case 'reported_profit': return 'Profit';
-      case 'reported_profit_margin': return 'Profit Margin';
+      case 'reported_profit_margin':
+      case 'margin_pct': return 'Profit Margin';
+      case 'gross_profit': return 'Gross Profit';
       case 'shipping_cost': return 'Shipping Cost';
       default: return metric;
     }
@@ -143,7 +151,7 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
 
   if (!chartOption) {
     return (
-      <div className={cn('rounded-xl border border-border bg-card flex items-center justify-center', `h-[${height}px]`)}>
+      <div style={{ height }} className="rounded-xl border border-border bg-card flex items-center justify-center">
         <div className="text-center text-muted-foreground">
           <div className="mb-2 text-4xl">📊</div>
           <p>No data to visualize</p>
@@ -176,11 +184,6 @@ export function ChartContainer({ rows, metrics, dimensions, height = 350 }: Char
           ref={chartRef}
           option={chartOption}
           style={{ width: '100%', height: '100%' }}
-          onEvents={{
-            click: (params: any) => {
-              console.log('Chart click:', params);
-            },
-          }}
         />
       </div>
     </div>

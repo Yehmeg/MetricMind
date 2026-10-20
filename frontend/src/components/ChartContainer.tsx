@@ -113,12 +113,12 @@ export function ChartContainer({ rows, metrics, dimensions }: ChartContainerProp
 
   const formatValue = (value: number, seriesName: string) => {
     const isPercent = seriesName.toLowerCase().includes('margin');
-    const isCurrency = seriesName.toLowerCase().includes('revenue') || 
-                       seriesName.toLowerCase().includes('profit') || 
+    const isMonetary = seriesName.toLowerCase().includes('revenue') ||
+                       seriesName.toLowerCase().includes('profit') ||
                        seriesName.toLowerCase().includes('shipping');
     
     if (isPercent) return `${value.toFixed(1)}%`;
-    if (isCurrency) return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    if (isMonetary) return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
     return value.toLocaleString();
   };
 
