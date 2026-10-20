@@ -40,3 +40,6 @@ app.add_middleware(
     allow_headers=['Content-Type'],
 )
 app.include_router(warehouse_router)
+
+from .warehouse_planner import router as warehouse_planner_router
+app.include_router(warehouse_planner_router)
