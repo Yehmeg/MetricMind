@@ -46,3 +46,6 @@ app.include_router(warehouse_planner_router)
 
 from .investigation_api import router as investigation_router
 app.include_router(investigation_router)
+
+from .investigation_planner import router as investigation_planner_router
+app.include_router(investigation_planner_router)
