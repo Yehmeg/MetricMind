@@ -64,3 +64,11 @@ git commit -m "feat: add bounded margin investigation with execution evidence"
 git push group omshree/frontend-integration
 ```
 Frontend and Member-1 files are unchanged. Share this contract with Gomti. Sync this commit to the personal repository after group validation.
+
+
+## Optional persistence update
+
+See TRACE_STORAGE.md. With METRICMIND_TRACE_DB_PATH configured, completed and
+insufficient-data responses are saved and can be retrieved through
+GET /api/v2/investigations/{investigation_id}. Without it, response-only behavior
+remains unchanged. This supersedes any response-only limitation stated above.

@@ -3,7 +3,8 @@ from datetime import date
 from decimal import Decimal, localcontext
 from time import monotonic
 from typing import Literal
-from uuid import uuid4
+from uuid import UUID, uuid4
+from . import investigation_store
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, model_validator
 from .warehouse_api import WarehouseQuery, execute
@@ -108,4 +109,17 @@ def investigate(request: InvestigationRequest):
                 trace.append({'step':3, 'operation':'calculate_margin_bridge', 'inputs':['baseline_query','comparison_query'],
                               'method':analysis['method'], 'result':analysis})
     response['elapsed_ms'] = round((monotonic()-started)*1000,3)
-    return response
+    try:
+        return investigation_store.save(response)
+    except investigation_store.TraceStoreError:
+        raise HTTPException(503, 'Investigation evidence could not be saved. Check trace storage configuration.') from None
+
+@router.get('/investigations/{investigation_id}')
+def get_investigation(investigation_id: UUID):
+    try:
+        result = investigation_store.load(investigation_id)
+    except investigation_store.TraceStoreError:
+        raise HTTPException(503, 'Investigation evidence storage is unavailable.') from None
+    if result is None:
+        raise HTTPException(404, 'Investigation not found.')
+    return result
